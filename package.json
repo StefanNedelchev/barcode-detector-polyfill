@@ -1,5 +1,5 @@
 {
-  "name": "barcode-detector-polyfill",
+  "name": "barcode-detector-api-polyfill",
   "version": "1.0.0",
   "private": false,
   "description": "A polyfill for the BarcodeDetector API using the ZXing library",
@@ -20,7 +20,10 @@
     "polyfill",
     "browser"
   ],
-  "repository": "https://github.com/StefanNedelchev/barcode-detector-polyfill.git",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/StefanNedelchev/barcode-detector-polyfill.git"
+  },
   "author": "Stefan Nedelchev",
   "license": "MIT",
   "main": "./cjs/index.js",

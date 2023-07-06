@@ -22,7 +22,7 @@ This project implements a polyfill for the BarcodeDetector API that follows the 
 
 ### Standalone browser script
 
-Download the latest build and use it as a regular JS file in a `<script>` tag or include it to your script imports if you use a bundler. This build takes care of adding the missing BarcodeDetector object to the global scope and you are able to use it the same way as the real BarcodeDetector API.
+Download the latest build and use it as a regular JS file in a `<script>` tag or include `node_modules/barcode-detector-api-polyfill/browser/barcode-detector-polyfill.min.js` to your script imports if you use a bundler. This build takes care of adding the missing BarcodeDetector object to the global scope and you are able to use it the same way as the real BarcodeDetector API.
 
 ### Module import
 
