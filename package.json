@@ -1,0 +1,44 @@
+{
+  "name": "barcode-detector-polyfill",
+  "version": "1.0.0",
+  "private": false,
+  "description": "A polyfill for the BarcodeDetector API using the ZXing library",
+  "scripts": {
+    "clean": "shx rm -rf dist",
+    "build": "npm run clean && tsc && npm run build:cjs && npm run build:browser && npm run build:copy",
+    "build:cjs": "tsc --build tsconfig.cjs.json",
+    "build:browser": "esbuild src/browser.ts --outfile=dist/browser/barcode-detector-polyfill.min.js --bundle --tree-shaking --target=firefox112,safari16 --minify --sourcemap",
+    "build:copy": "shx cp README.md dist && shx cp package.json dist && shx cp LICENSE dist",
+    "lint": "eslint src",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "barcode",
+    "detector",
+    "reader",
+    "api",
+    "polyfill",
+    "browser"
+  ],
+  "repository": "git.....",
+  "author": "Stefan Nedelchev",
+  "license": "MIT",
+  "main": "./cjs/index.js",
+  "module": "./es2022/inedx.js",
+  "typings": "./es2022/index.d.ts",
+  "esnext": "./es2022/index.js",
+  "unpkg": "./browser/barcode-detector-polyfill.min.js",
+  "dependencies": {
+    "@zxing/browser": "^0.1.4",
+    "@zxing/library": "^0.20.0"
+  },
+  "devDependencies": {
+    "@types/node": "^18.16.19",
+    "@typescript-eslint/eslint-plugin": "^5.61.0",
+    "@typescript-eslint/parser": "^5.61.0",
+    "esbuild": "^0.18.11",
+    "eslint": "^8.44.0",
+    "shx": "^0.3.4",
+    "typescript": "~5.1.6"
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:@typescript-eslint/recommended-requiring-type-checking"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "project": ["tsconfig.json"],
+    "ecmaVersion": 2022,
+    "sourceType": "module"
+  },
+  "plugins": ["@typescript-eslint"],
+  "root": true,
+  "rules": {
+    // Switch off vanilla eslint rules which will be overriden by @typescript-eslint
+    "quotes": "off",
+    "semi": "off",
+
+    // Add @typescript-eslint rules
+    "@typescript-eslint/array-type": "error",
+    "@typescript-eslint/consistent-indexed-object-style": "error",
+    "@typescript-eslint/explicit-module-boundary-types": "error",
+    "@typescript-eslint/no-duplicate-enum-values": "error",
+    "@typescript-eslint/no-explicit-any": "error",
+    "@typescript-eslint/quotes": [
+      "error",
+      "single",
+      {
+        "allowTemplateLiterals": true
+      }
+    ],
+    "@typescript-eslint/semi": [
+      "error",
+      "always",
+      {
+        "omitLastInOneLineBlock": true
+      }
+    ],
+
+    // Add generic eslint rules
+    "comma-dangle": ["error", "always-multiline"],
+    "max-len": [
+      "warn",
+      {
+        "code": 130,
+        "ignoreComments": true
+      }
+    ],
+    "no-var": "error"
+  },
+  "ignorePatterns": [
+    "/dist",
+    "/node_modules"
+  ]
+}
