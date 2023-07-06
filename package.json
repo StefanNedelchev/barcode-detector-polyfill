@@ -20,7 +20,7 @@
     "polyfill",
     "browser"
   ],
-  "repository": "git.....",
+  "repository": "https://github.com/StefanNedelchev/barcode-detector-polyfill.git",
   "author": "Stefan Nedelchev",
   "license": "MIT",
   "main": "./cjs/index.js",

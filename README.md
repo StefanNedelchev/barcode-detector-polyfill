@@ -22,11 +22,9 @@ This project implements a polyfill for the BarcodeDetector API that follows the 
 
 ### Standalone browser script
 
-Download the latest build and use it as a regular JS file in a `<script>` tag. This build takes care of adding the missing BarcodeDetector object to the global scope and you are able to use it the same way as the real BarcodeDetector API.
+Download the latest build and use it as a regular JS file in a `<script>` tag or include it to your script imports if you use a bundler. This build takes care of adding the missing BarcodeDetector object to the global scope and you are able to use it the same way as the real BarcodeDetector API.
 
-### ES6 import
-
-You can directly point to the package with an `import` statement. The default export includes the polyfill and does the initialization logic in a similar way as the browser build.
+### Module import
 
 If you just want to have the detector and handle the polyfilling by yourself you can simply import the `BarcodeDetector` class in your code. A valid use case for this could be if you use a bundler and you want to lazy load the polyfill only when its needed.
 
