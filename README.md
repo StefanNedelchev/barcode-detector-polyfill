@@ -18,15 +18,36 @@ As you can see there is a huge gap in the support across mobile and desktop plat
 
 This project implements a polyfill for the BarcodeDetector API that follows the [W3C specification](https://wicg.github.io/shape-detection-api/#barcode-detection-api) with the help of the [ZXing library](https://github.com/zxing-js/library) and [its browser layer](https://github.com/zxing-js/browser). ZXing ("zebra crossing") is a popular open-source library that works with 1D and 2D barcode formats. It was originally written in Java but was eventually ported to many different languages including JavaScript and TypeScript.
 
-## How to use?
+## How to install?
 
 ### Standalone browser script
 
-Download the latest build and use it as a regular JS file in a `<script>` tag or include `node_modules/barcode-detector-api-polyfill/browser/barcode-detector-polyfill.min.js` to your script imports if you use a bundler. This build takes care of adding the missing BarcodeDetector object to the global scope and you are able to use it the same way as the real BarcodeDetector API.
+Download the latest build and use it as a regular JS file in a `<script>` tag. This build takes care of adding the missing BarcodeDetector object to the global scope and you are able to use it the same way as the real BarcodeDetector API.
 
-### Module import
+```html
+<script src="browser/barcode-detector-polyfill.min.js"></script>
+```
 
-If you just want to have the detector and handle the polyfilling by yourself you can simply import the `BarcodeDetector` class in your code. A valid use case for this could be if you use a bundler and you want to lazy load the polyfill only when its needed.
+
+### NPM module
+
+```
+npm install barcode-detector-api-polyfill
+```
+
+Include `node_modules/barcode-detector-api-polyfill/browser/barcode-detector-polyfill.min.js` to your script imports if you use a bundler
+
+If you just want to have the detector and handle the polyfilling by yourself you can simply import the `BarcodeDetector` class in your code.
+
+```ts
+import { BarcodeDetector, WindowWithBarcodeDetector } from 'barcode-detector-api-polyfill';
+
+if (!('BarcodeDetector' in window)) {
+  (window as WindowWithBarcodeDetector).BarcodeDetector = BarcodeDetector;
+}
+```
+
+A valid use case for this could be if you use a bundler and you want to lazy load the polyfill only when its needed.
 
 ## Important notes and known drawbacks
 
