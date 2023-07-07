@@ -1,46 +1,10 @@
-import { BarcodeFormat, BrowserMultiFormatReader } from '@zxing/browser';
+import { BrowserMultiFormatReader } from '@zxing/browser';
 import { DecodeHintType, NotFoundException, Result } from '@zxing/library';
 import type { ICornerPoint, IDetectedBarcode, IBarcodeDetector } from './models';
+import { nativeToZxingFormat, zxingToNativeFormat } from './constants';
 
 export class BarcodeDetector implements IBarcodeDetector {
   private reader: BrowserMultiFormatReader;
-
-  // format names taken from https://developer.mozilla.org/en-US/docs/Web/API/Barcode_Detection_API#supported_barcode_formats
-  private static zxingToNativeFormat: Record<BarcodeFormat, string> = {
-    [BarcodeFormat.AZTEC]: 'aztec',
-    [BarcodeFormat.CODABAR]: 'codabar',
-    [BarcodeFormat.CODE_39]: 'code_39',
-    [BarcodeFormat.CODE_93]: 'code_93',
-    [BarcodeFormat.CODE_128]: 'code_128',
-    [BarcodeFormat.DATA_MATRIX]: 'data_matrix',
-    [BarcodeFormat.EAN_8]: 'ean_8',
-    [BarcodeFormat.EAN_13]: 'ean_13',
-    [BarcodeFormat.ITF]: 'itf',
-    [BarcodeFormat.PDF_417]: 'pdf417',
-    [BarcodeFormat.QR_CODE]: 'qr_code',
-    [BarcodeFormat.UPC_A]: 'upc_a',
-    [BarcodeFormat.UPC_E]: 'upc_e',
-    [BarcodeFormat.UPC_EAN_EXTENSION]: 'unknown',
-    [BarcodeFormat.MAXICODE]: 'unknown',
-    [BarcodeFormat.RSS_14]: 'unknown',
-    [BarcodeFormat.RSS_EXPANDED]: 'unknown',
-  };
-
-  private static nativeToZxingFormat: Record<string, BarcodeFormat> = {
-    aztec: BarcodeFormat.AZTEC,
-    codabar: BarcodeFormat.CODABAR,
-    code_39: BarcodeFormat.CODE_39,
-    code_93: BarcodeFormat.CODE_93,
-    code_128: BarcodeFormat.CODE_128,
-    data_matrix: BarcodeFormat.DATA_MATRIX,
-    ean_8: BarcodeFormat.EAN_8,
-    ean_13: BarcodeFormat.EAN_13,
-    itf: BarcodeFormat.ITF,
-    pdf417: BarcodeFormat.PDF_417,
-    qr_code: BarcodeFormat.QR_CODE,
-    upc_a: BarcodeFormat.UPC_A,
-    upc_e: BarcodeFormat.UPC_E,
-  };
 
   constructor(options?: { formats: string[] }) {
     const hints = new Map<DecodeHintType, unknown>([
@@ -48,8 +12,8 @@ export class BarcodeDetector implements IBarcodeDetector {
       [
         DecodeHintType.POSSIBLE_FORMATS,
         options
-          ? options.formats.map((f) => BarcodeDetector.nativeToZxingFormat[f])
-          : Object.values(BarcodeDetector.nativeToZxingFormat),
+          ? options.formats.map((f) => nativeToZxingFormat[f])
+          : Object.values(nativeToZxingFormat),
       ],
     ]);
 
@@ -57,7 +21,7 @@ export class BarcodeDetector implements IBarcodeDetector {
   }
 
   public static getSupportedFormats(): Promise<string[]> {
-    return Promise.resolve(Object.values(BarcodeDetector.zxingToNativeFormat));
+    return Promise.resolve(Object.values(zxingToNativeFormat));
   }
 
   public async detect(imageSource: ImageBitmapSource): Promise<IDetectedBarcode[]> {
@@ -79,8 +43,8 @@ export class BarcodeDetector implements IBarcodeDetector {
 
       return [{
         rawValue: result.getText(),
-        format: BarcodeDetector.zxingToNativeFormat[result.getBarcodeFormat()],
-        boundingBox: new DOMRectReadOnly(),
+        format: zxingToNativeFormat[result.getBarcodeFormat()],
+        boundingBox: new DOMRectReadOnly(), // TODO: think of a way to map this in a meaningful way
         cornerPoints: result.getResultPoints().map<ICornerPoint>((p) => ({ x: p.getX(), y: p.getY() })),
       }];
     } catch (err) {
