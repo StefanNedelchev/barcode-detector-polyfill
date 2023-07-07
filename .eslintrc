@@ -6,7 +6,7 @@
   ],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
-    "project": ["tsconfig.json"],
+    "project": ["./tsconfig.json", "./tsconfig.test.json"],
     "ecmaVersion": 2022,
     "sourceType": "module"
   },
@@ -23,6 +23,7 @@
     "@typescript-eslint/explicit-module-boundary-types": "error",
     "@typescript-eslint/no-duplicate-enum-values": "error",
     "@typescript-eslint/no-explicit-any": "error",
+    "@typescript-eslint/no-floating-promises": "warn",
     "@typescript-eslint/quotes": [
       "error",
       "single",

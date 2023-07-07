@@ -1,16 +1,16 @@
 {
   "name": "barcode-detector-api-polyfill",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "private": false,
   "description": "A polyfill for the BarcodeDetector API using the ZXing library",
   "scripts": {
     "clean": "shx rm -rf dist",
-    "build": "npm run clean && tsc && npm run build:cjs && npm run build:browser && npm run build:copy",
+    "build": "npm run clean && npm run test && tsc && npm run build:cjs && npm run build:browser && npm run build:copy",
     "build:cjs": "tsc --build tsconfig.cjs.json",
     "build:browser": "esbuild src/browser.ts --outfile=dist/browser/barcode-detector-polyfill.min.js --bundle --tree-shaking --target=firefox112,safari16 --minify --sourcemap",
     "build:copy": "shx cp README.md dist && shx cp package.json dist && shx cp LICENSE dist",
-    "lint": "eslint src",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint": "eslint src __tests__",
+    "test": "jest"
   },
   "keywords": [
     "barcode",
@@ -36,12 +36,18 @@
     "@zxing/library": "^0.20.0"
   },
   "devDependencies": {
+    "@types/jest": "^29.5.2",
     "@types/node": "^18.16.19",
     "@typescript-eslint/eslint-plugin": "^5.61.0",
     "@typescript-eslint/parser": "^5.61.0",
+    "canvas": "^2.11.2",
     "esbuild": "^0.18.11",
     "eslint": "^8.44.0",
+    "jest": "^29.6.1",
+    "jest-canvas-mock": "^2.5.2",
+    "jest-environment-jsdom": "^29.6.1",
     "shx": "^0.3.4",
+    "ts-jest": "^29.1.1",
     "typescript": "~5.1.6"
   }
 }
