@@ -33,8 +33,11 @@ describe('BarcodeDetector', () => {
   let scanOneResultSpy: jest.SpyInstance<Promise<Result>>;
   let decodeFromCanvasSpy: jest.SpyInstance<Result>;
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access
-  (window as any).DOMRectReadOnly = jest.fn();
+  Object.defineProperty(window, 'DOMRectReadOnly', {
+    writable: true,
+    configurable: true,
+    value: jest.fn(),
+  });
 
   beforeEach(() => {
     acceptedFormats = [];
@@ -127,8 +130,11 @@ describe('BarcodeDetector', () => {
 
     it('should use ZXing decodeFromCanvas() from ImageBitmap source', async () => {
       // Arrange
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access
-      (window as any).ImageBitmap = jest.fn();
+      Object.defineProperty(window, 'ImageBitmap', {
+        writable: true,
+        configurable: true,
+        value: jest.fn(),
+      });
       const detector = new BarcodeDetector();
       const imageBitmap = new ImageBitmap();
 
