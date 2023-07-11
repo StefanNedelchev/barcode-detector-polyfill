@@ -35,8 +35,12 @@ export class BarcodeDetector implements IBarcodeDetector {
       } else if (imageSource instanceof Blob) {
         const image = await this.blobToImage(imageSource);
         result = await this.reader.scanOneResult(image, false);
-      } else if (imageSource instanceof ImageBitmap) {
-        result = this.reader.decodeFromCanvas(this.imageBitmapToCanvas(imageSource));
+      } else if (
+        imageSource instanceof ImageBitmap
+        || imageSource instanceof ImageData
+        || imageSource instanceof VideoFrame
+      ) {
+        result = this.reader.decodeFromCanvas(this.imageDataSourceToCanvas(imageSource));
       } else {
         throw new TypeError('Image source is not supported');
       }
@@ -70,12 +74,18 @@ export class BarcodeDetector implements IBarcodeDetector {
     });
   }
 
-  private imageBitmapToCanvas(imageBitmap: ImageBitmap): HTMLCanvasElement {
+  private imageDataSourceToCanvas(source: ImageBitmap | ImageData | VideoFrame): HTMLCanvasElement {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
+    const width = source instanceof VideoFrame ? source.displayWidth : source.width;
+    const height = source instanceof VideoFrame ? source.displayHeight : source.height;
 
     if (ctx) {
-      ctx.drawImage(imageBitmap, imageBitmap.width, imageBitmap.height);
+      if (source instanceof ImageData) {
+        ctx.putImageData(source, width, height);
+      } else {
+        ctx.drawImage(source, width, height);
+      }
     }
 
     return canvas;
