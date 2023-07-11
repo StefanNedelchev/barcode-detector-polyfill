@@ -1,5 +1,6 @@
 import { BrowserMultiFormatReader } from '@zxing/browser';
 import { BarcodeFormat, DecodeHintType, IllegalArgumentException, NotFoundException, Result, ResultPoint } from '@zxing/library';
+import { ImageData as ImageDataCanvas, CanvasRenderingContext2D } from 'canvas';
 import { BarcodeDetector } from '../src/BarcodeDetector';
 import { nativeToZxingFormat, zxingToNativeFormat } from '../src/constants';
 import { IDetectedBarcode } from '../src/models';
@@ -37,6 +38,47 @@ describe('BarcodeDetector', () => {
     writable: true,
     configurable: true,
     value: jest.fn(),
+  });
+
+  Object.defineProperty(window, 'ImageData', {
+    writable: true,
+    configurable: true,
+    value: ImageDataCanvas,
+  });
+
+  class VideoFrameMock implements VideoFrame {
+    codedHeight = 0;
+    codedWidth = 0;
+    codedRect: DOMRectReadOnly | null = null;
+    visibleRect: DOMRectReadOnly | null = null;
+    colorSpace: VideoColorSpace = {} as VideoColorSpace;
+    displayHeight = 0;
+    displayWidth = 0;
+    duration: number | null = null;
+    format: VideoPixelFormat | null = null;
+    timestamp = 0;
+
+    allocationSize(options?: VideoFrameCopyToOptions | undefined): number {
+      return 0;
+    }
+
+    clone(): VideoFrame {
+      return structuredClone(this) as unknown as VideoFrame;
+    }
+
+    close(): void {
+      // empty
+    }
+
+    copyTo(destination: BufferSource, options?: VideoFrameCopyToOptions | undefined): Promise<PlaneLayout[]> {
+      return Promise.resolve([]);
+    }
+  }
+
+  Object.defineProperty(window, 'VideoFrame', {
+    writable: true,
+    configurable: true,
+    value: VideoFrameMock,
   });
 
   beforeEach(() => {
@@ -146,6 +188,33 @@ describe('BarcodeDetector', () => {
       expect(decodeFromCanvasSpy).toHaveBeenCalled();
     });
 
+    it('should use ZXing decodeFromCanvas() from ImageData source', async () => {
+      // Arrange
+      const detector = new BarcodeDetector();
+      const imageData = new ImageData(300, 200);
+
+      // Act
+      await detector.detect(imageData);
+
+      // Assert
+      expect(scanOneResultSpy).not.toHaveBeenCalled();
+      expect(decodeFromCanvasSpy).toHaveBeenCalled();
+    });
+
+    it('should use ZXing decodeFromCanvas() from VideoFrame source', async () => {
+      // Arrange
+      const detector = new BarcodeDetector();
+      const videoFrame = new VideoFrame(document.createElement('img'));
+      jest.spyOn(CanvasRenderingContext2D.prototype, 'drawImage').mockImplementation(jest.fn());
+
+      // Act
+      await detector.detect(videoFrame);
+
+      // Assert
+      expect(scanOneResultSpy).not.toHaveBeenCalled();
+      expect(decodeFromCanvasSpy).toHaveBeenCalled();
+    });
+
     it('should reslove to empty array when ZXing throws NotFoundException', async () => {
       // Arrange
       scanOneResultSpy = jest.spyOn(BrowserMultiFormatReader.prototype, 'scanOneResult')
@@ -170,6 +239,14 @@ describe('BarcodeDetector', () => {
 
       // Act/Assert
       expect(detector.detect(image)).rejects.toThrowError('TEST');
+    });
+
+    it('should throw on unsupported format', () => {
+      // Arrange
+      const detector = new BarcodeDetector();
+
+      // Act/Assert
+      expect(detector.detect(null as unknown as ImageBitmapSource)).rejects.toThrowError('Image source is not supported');
     });
 
     it('should map ZXing result correctly', async () => {
