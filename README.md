@@ -82,3 +82,5 @@ This section here is for the curious ones who are interested in the development 
 The implementation of the `detect()` method was a challenge because unlike the BarcodeDetector API, ZXing doesn't have this silver bullet detection method that accepts all kinds of image sources but rather has different methods that decode from different sources (canvas, video, image, stream, etc.). Because of this, the polyfill implementation conditionally calls different methods for one-time detection based on the type of the image source.
 
 Another challenge was to align the differences between the barcode formats of ZXing and the BarcodeDetector API. The barcode formats in ZXing are presented as a numeric `enum` while the BarcodeDetector API accepts (and returns) strings. To make the methods of the polyfill work as expected, two special map-like objects had to be created to make it possible to map barcode formats back and forth.
+
+For the browser build we use `esbuild` due its many advantages compared to `webpack`.
