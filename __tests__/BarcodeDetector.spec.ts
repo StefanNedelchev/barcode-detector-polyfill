@@ -83,8 +83,10 @@ describe('BarcodeDetector', () => {
 
   beforeEach(() => {
     acceptedFormats = [];
-    scanOneResultSpy = jest.spyOn(BrowserMultiFormatReader.prototype, 'scanOneResult');
-    decodeFromCanvasSpy = jest.spyOn(BrowserMultiFormatReader.prototype, 'decodeFromCanvas');
+    scanOneResultSpy = jest.spyOn(BrowserMultiFormatReader.prototype, 'scanOneResult')
+      .mockResolvedValue(new Result('12345', new Uint8Array(), 5, [], BarcodeFormat.CODE_39));
+    decodeFromCanvasSpy = jest.spyOn(BrowserMultiFormatReader.prototype, 'decodeFromCanvas')
+      .mockReturnValue(new Result('12345', new Uint8Array(), 5, [], BarcodeFormat.CODE_39));
   });
 
   it('should be created', () => {
