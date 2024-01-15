@@ -58,7 +58,8 @@ describe('BarcodeDetector', () => {
     format: VideoPixelFormat | null = null;
     timestamp = 0;
 
-    allocationSize(options?: VideoFrameCopyToOptions | undefined): number {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    allocationSize(_options?: VideoFrameCopyToOptions | undefined): number {
       return 0;
     }
 
@@ -70,7 +71,8 @@ describe('BarcodeDetector', () => {
       // empty
     }
 
-    copyTo(destination: BufferSource, options?: VideoFrameCopyToOptions | undefined): Promise<PlaneLayout[]> {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    copyTo(_destination: BufferSource, _options?: VideoFrameCopyToOptions | undefined): Promise<PlaneLayout[]> {
       return Promise.resolve([]);
     }
   }
