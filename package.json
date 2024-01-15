@@ -1,11 +1,12 @@
 {
   "name": "barcode-detector-api-polyfill",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "private": false,
   "description": "A polyfill for the BarcodeDetector API using the ZXing library",
   "scripts": {
     "clean": "shx rm -rf dist",
-    "build": "npm run clean && npm run test && tsc && npm run build:cjs && npm run build:browser && npm run build:copy",
+    "build": "npm run clean && npm run test && npm run build:es2022 && npm run build:cjs && npm run build:browser && npm run build:copy",
+    "build:es2022": "tsc --build tsconfig.es2022.json",
     "build:cjs": "tsc --build tsconfig.cjs.json",
     "build:browser": "esbuild src/browser.ts --outfile=dist/browser/barcode-detector-polyfill.min.js --bundle --tree-shaking --target=firefox112,safari16 --minify --sourcemap",
     "build:copy": "shx cp README.md dist && shx cp package.json dist && shx cp LICENSE dist",
