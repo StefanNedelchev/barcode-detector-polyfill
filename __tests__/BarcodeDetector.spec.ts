@@ -234,7 +234,7 @@ describe('BarcodeDetector', () => {
     });
 
 
-    it('should re-throw any other error', () => {
+    it('should re-throw any other error', async () => {
       // Arrange
       scanOneResultSpy = jest.spyOn(BrowserMultiFormatReader.prototype, 'scanOneResult')
         .mockRejectedValue(new IllegalArgumentException('TEST'));
@@ -242,15 +242,15 @@ describe('BarcodeDetector', () => {
       const image = document.createElement('img');
 
       // Act/Assert
-      expect(detector.detect(image)).rejects.toThrowError('TEST');
+      await expect(detector.detect(image)).rejects.toThrow('TEST');
     });
 
-    it('should throw on unsupported format', () => {
+    it('should throw on unsupported format', async () => {
       // Arrange
       const detector = new BarcodeDetector();
 
       // Act/Assert
-      expect(detector.detect(null as unknown as ImageBitmapSource)).rejects.toThrowError('Image source is not supported');
+      await expect(detector.detect(null as unknown as ImageBitmapSource)).rejects.toThrow('Image source is not supported');
     });
 
     it('should map ZXing result correctly', async () => {
