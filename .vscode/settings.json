@@ -1,12 +1,5 @@
 {
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit"
-  },
-  "eslint.options": {
-    "extensions": [".ts", ".js"]
-  },
-  "eslint.validate": [
-    "javascript",
-    "typescript",
-  ]
+  }
 }

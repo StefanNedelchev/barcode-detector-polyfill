@@ -59,7 +59,7 @@ describe('BarcodeDetector', () => {
     timestamp = 0;
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    allocationSize(_options?: VideoFrameCopyToOptions | undefined): number {
+    allocationSize(_options?: VideoFrameCopyToOptions): number {
       return 0;
     }
 
@@ -72,7 +72,7 @@ describe('BarcodeDetector', () => {
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    copyTo(_destination: BufferSource, _options?: VideoFrameCopyToOptions | undefined): Promise<PlaneLayout[]> {
+    copyTo(_destination: BufferSource, _options?: VideoFrameCopyToOptions): Promise<PlaneLayout[]> {
       return Promise.resolve([]);
     }
   }
@@ -232,7 +232,6 @@ describe('BarcodeDetector', () => {
       // Assert
       expect(result).toHaveLength(0);
     });
-
 
     it('should re-throw any other error', async () => {
       // Arrange

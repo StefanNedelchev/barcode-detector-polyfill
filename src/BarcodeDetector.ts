@@ -68,7 +68,7 @@ export class BarcodeDetector implements IBarcodeDetector {
         URL.revokeObjectURL(imageObjUrl);
         resolve(image);
       };
-      image.onerror = () => reject();
+      image.onerror = () => reject(new Error('Failed to load image from blob'));
 
       image.src = imageObjUrl;
     });
