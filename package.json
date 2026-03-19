@@ -1,6 +1,6 @@
 {
   "name": "barcode-detector-api-polyfill",
-  "version": "1.0.24",
+  "version": "1.0.25",
   "private": false,
   "description": "A polyfill for the BarcodeDetector API using the ZXing library",
   "scripts": {
@@ -61,6 +61,6 @@
     "shx": "^0.4.0",
     "ts-jest": "^29.4.6",
     "typescript": "~5.8.3",
-    "typescript-eslint": "^8.57.0"
+    "typescript-eslint": "^8.57.1"
   }
 }
