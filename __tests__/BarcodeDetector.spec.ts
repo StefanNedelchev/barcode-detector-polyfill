@@ -64,7 +64,7 @@ describe('BarcodeDetector', () => {
     }
 
     clone(): VideoFrame {
-      return structuredClone(this) as unknown as VideoFrame;
+      return structuredClone(this);
     }
 
     close(): void {

@@ -14,6 +14,7 @@ export const zxingToNativeFormat: Record<BarcodeFormat, string> = {
   [BarcodeFormat.ITF]: 'itf',
   [BarcodeFormat.PDF_417]: 'pdf417',
   [BarcodeFormat.QR_CODE]: 'qr_code',
+  [BarcodeFormat.MICRO_QR_CODE]: 'qr_code',
   [BarcodeFormat.UPC_A]: 'upc_a',
   [BarcodeFormat.UPC_E]: 'upc_e',
   [BarcodeFormat.UPC_EAN_EXTENSION]: 'unknown',
