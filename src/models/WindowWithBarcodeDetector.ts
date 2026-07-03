@@ -5,7 +5,7 @@ export type WindowWithBarcodeDetector = Window
   & {
     BarcodeDetector: {
       prototype: IBarcodeDetector;
-      new(): IBarcodeDetector;
+      new(options?: { formats?: string[] }): IBarcodeDetector;
       getSupportedFormats(): Promise<string[]>;
     };
   };

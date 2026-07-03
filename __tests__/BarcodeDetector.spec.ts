@@ -32,7 +32,7 @@ jest.mock('@zxing/browser', () => {
 
 describe('BarcodeDetector', () => {
   let scanOneResultSpy: jest.SpyInstance<Promise<Result>>;
-  let decodeFromCanvasSpy: jest.SpyInstance<Result>;
+  let decodeFromCanvasSpy: jest.SpyInstance<Result, [HTMLCanvasElement]>;
 
   Object.defineProperty(window, 'DOMRectReadOnly', {
     writable: true,
@@ -52,8 +52,8 @@ describe('BarcodeDetector', () => {
     codedRect: DOMRectReadOnly | null = null;
     visibleRect: DOMRectReadOnly | null = null;
     colorSpace: VideoColorSpace = {} as VideoColorSpace;
-    displayHeight = 0;
-    displayWidth = 0;
+    displayHeight = 200;
+    displayWidth = 300;
     duration: number | null = null;
     format: VideoPixelFormat | null = null;
     timestamp = 0;
@@ -90,6 +90,26 @@ describe('BarcodeDetector', () => {
     decodeFromCanvasSpy = jest.spyOn(BrowserMultiFormatReader.prototype, 'decodeFromCanvas')
       .mockReturnValue(new Result('12345', new Uint8Array(), 5, [], BarcodeFormat.CODE_39));
   });
+
+  function createLoadedImage(): HTMLImageElement {
+    const image = document.createElement('img');
+    Object.defineProperties(image, {
+      complete: { configurable: true, value: true },
+      naturalWidth: { configurable: true, value: 300 },
+      naturalHeight: { configurable: true, value: 200 },
+    });
+    return image;
+  }
+
+  function createReadyVideo(): HTMLVideoElement {
+    const video = document.createElement('video');
+    Object.defineProperties(video, {
+      readyState: { configurable: true, value: video.HAVE_CURRENT_DATA },
+      videoWidth: { configurable: true, value: 300 },
+      videoHeight: { configurable: true, value: 200 },
+    });
+    return video;
+  }
 
   it('should be created', () => {
     const detector = new BarcodeDetector();
@@ -132,13 +152,22 @@ describe('BarcodeDetector', () => {
       // Assert
       expect(acceptedFormats).toEqual(expectedZXingFormats);
     });
+
+    it('should throw when formats is empty', () => {
+      expect(() => new BarcodeDetector({ formats: [] })).toThrow(TypeError);
+    });
+
+    it('should throw when a format is unsupported', () => {
+      expect(() => new BarcodeDetector({ formats: ['unknown'] })).toThrow(TypeError);
+      expect(() => new BarcodeDetector({ formats: ['not_a_format'] })).toThrow(TypeError);
+    });
   });
 
   describe('detect()', () => {
     it('should use ZXing scanOneResult() from image source', async () => {
       // Arrange
       const detector = new BarcodeDetector();
-      const image = document.createElement('img');
+      const image = createLoadedImage();
 
       // Act
       await detector.detect(image);
@@ -151,7 +180,7 @@ describe('BarcodeDetector', () => {
     it('should use ZXing scanOneResult() from video source', async () => {
       // Arrange
       const detector = new BarcodeDetector();
-      const video = document.createElement('video');
+      const video = createReadyVideo();
 
       // Act
       await detector.detect(video);
@@ -176,13 +205,22 @@ describe('BarcodeDetector', () => {
 
     it('should use ZXing decodeFromCanvas() from ImageBitmap source', async () => {
       // Arrange
+      class ImageBitmapMock {
+        width = 300;
+        height = 200;
+
+        close(): void {
+          // empty
+        }
+      }
       Object.defineProperty(window, 'ImageBitmap', {
         writable: true,
         configurable: true,
-        value: jest.fn(),
+        value: ImageBitmapMock,
       });
       const detector = new BarcodeDetector();
       const imageBitmap = new ImageBitmap();
+      const drawImageSpy = jest.spyOn(CanvasRenderingContext2D.prototype, 'drawImage').mockImplementation(jest.fn());
 
       // Act
       await detector.detect(imageBitmap);
@@ -190,12 +228,17 @@ describe('BarcodeDetector', () => {
       // Assert
       expect(scanOneResultSpy).not.toHaveBeenCalled();
       expect(decodeFromCanvasSpy).toHaveBeenCalled();
+      const canvas = decodeFromCanvasSpy.mock.calls[0]?.[0];
+      expect(canvas?.width).toBe(300);
+      expect(canvas?.height).toBe(200);
+      expect(drawImageSpy).toHaveBeenCalledWith(imageBitmap, 0, 0, 300, 200);
     });
 
     it('should use ZXing decodeFromCanvas() from ImageData source', async () => {
       // Arrange
       const detector = new BarcodeDetector();
       const imageData = new ImageData(300, 200);
+      const putImageDataSpy = jest.spyOn(CanvasRenderingContext2D.prototype, 'putImageData');
 
       // Act
       await detector.detect(imageData);
@@ -203,6 +246,10 @@ describe('BarcodeDetector', () => {
       // Assert
       expect(scanOneResultSpy).not.toHaveBeenCalled();
       expect(decodeFromCanvasSpy).toHaveBeenCalled();
+      const canvas = decodeFromCanvasSpy.mock.calls[0]?.[0];
+      expect(canvas?.width).toBe(300);
+      expect(canvas?.height).toBe(200);
+      expect(putImageDataSpy).toHaveBeenCalledWith(imageData, 0, 0);
     });
 
     it('should use ZXing decodeFromCanvas() from VideoFrame source', async () => {
@@ -217,6 +264,80 @@ describe('BarcodeDetector', () => {
       // Assert
       expect(scanOneResultSpy).not.toHaveBeenCalled();
       expect(decodeFromCanvasSpy).toHaveBeenCalled();
+      const canvas = decodeFromCanvasSpy.mock.calls[0]?.[0];
+      expect(canvas?.width).toBe(300);
+      expect(canvas?.height).toBe(200);
+    });
+
+    it('should use ZXing decodeFromCanvas() from SVGImageElement source', async () => {
+      // Arrange
+      class SVGImageElementMock {
+        width = { baseVal: { value: 300 } };
+        height = { baseVal: { value: 200 } };
+      }
+      Object.defineProperty(window, 'SVGImageElement', {
+        writable: true,
+        configurable: true,
+        value: SVGImageElementMock,
+      });
+      const image = new SVGImageElement();
+      const detector = new BarcodeDetector();
+      const drawImageSpy = jest.spyOn(CanvasRenderingContext2D.prototype, 'drawImage').mockImplementation(jest.fn());
+
+      // Act
+      await detector.detect(image);
+
+      // Assert
+      expect(decodeFromCanvasSpy).toHaveBeenCalled();
+      expect(drawImageSpy).toHaveBeenCalledWith(image, 0, 0, 300, 200);
+    });
+
+    it('should use ZXing decodeFromCanvas() from OffscreenCanvas source', async () => {
+      // Arrange
+      class OffscreenCanvasMock {
+        constructor(public width: number, public height: number) {}
+      }
+      Object.defineProperty(window, 'OffscreenCanvas', {
+        writable: true,
+        configurable: true,
+        value: OffscreenCanvasMock,
+      });
+      const source = new OffscreenCanvas(300, 200);
+      const detector = new BarcodeDetector();
+      const drawImageSpy = jest.spyOn(CanvasRenderingContext2D.prototype, 'drawImage').mockImplementation(jest.fn());
+
+      // Act
+      await detector.detect(source);
+
+      // Assert
+      expect(decodeFromCanvasSpy).toHaveBeenCalled();
+      expect(drawImageSpy).toHaveBeenCalledWith(source, 0, 0, 300, 200);
+    });
+
+    it('should reject images that are not fully decodable', async () => {
+      const detector = new BarcodeDetector();
+
+      await expect(detector.detect(document.createElement('img'))).rejects.toMatchObject({
+        name: 'InvalidStateError',
+      });
+    });
+
+    it('should reject videos that do not have frame data', async () => {
+      const detector = new BarcodeDetector();
+
+      await expect(detector.detect(document.createElement('video'))).rejects.toMatchObject({
+        name: 'InvalidStateError',
+      });
+    });
+
+    it('should resolve to an empty array for a zero-sized canvas', async () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = 0;
+      canvas.height = 0;
+      const detector = new BarcodeDetector();
+
+      await expect(detector.detect(canvas)).resolves.toEqual([]);
+      expect(decodeFromCanvasSpy).not.toHaveBeenCalled();
     });
 
     it('should reslove to empty array when ZXing throws NotFoundException', async () => {
@@ -224,7 +345,7 @@ describe('BarcodeDetector', () => {
       scanOneResultSpy = jest.spyOn(BrowserMultiFormatReader.prototype, 'scanOneResult')
         .mockRejectedValue(new NotFoundException('TEST'));
       const detector = new BarcodeDetector();
-      const image = document.createElement('img');
+      const image = createLoadedImage();
 
       // Act
       const result = await detector.detect(image);
@@ -238,7 +359,7 @@ describe('BarcodeDetector', () => {
       scanOneResultSpy = jest.spyOn(BrowserMultiFormatReader.prototype, 'scanOneResult')
         .mockRejectedValue(new IllegalArgumentException('TEST'));
       const detector = new BarcodeDetector();
-      const image = document.createElement('img');
+      const image = createLoadedImage();
 
       // Act/Assert
       await expect(detector.detect(image)).rejects.toThrow('TEST');
@@ -268,16 +389,17 @@ describe('BarcodeDetector', () => {
         rawValue: resultText,
         cornerPoints: resultPoints,
         format: zxingToNativeFormat[resultFormat],
-        boundingBox: new DOMRectReadOnly(),
+        boundingBox: new DOMRectReadOnly(100, 200, 100, 10),
       };
       scanOneResultSpy = jest.spyOn(BrowserMultiFormatReader.prototype, 'scanOneResult').mockResolvedValue(zxingResult);
       const detector = new BarcodeDetector();
 
       // Act
-      const result = await detector.detect(document.createElement('img'));
+      const result = await detector.detect(createLoadedImage());
 
       // Assert
       expect(result).toEqual([nativeResult]);
+      expect(DOMRectReadOnly).toHaveBeenLastCalledWith(100, 200, 100, 10);
     });
   });
 });
