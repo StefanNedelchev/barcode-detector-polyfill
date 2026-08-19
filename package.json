@@ -1,6 +1,6 @@
 {
   "name": "barcode-detector-api-polyfill",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "private": false,
   "description": "A polyfill for the BarcodeDetector API using the ZXing library",
   "scripts": {
@@ -44,8 +44,8 @@
     }
   },
   "dependencies": {
-    "@zxing/browser": "^0.2.0",
-    "@zxing/library": "^0.22.0"
+    "@zxing/browser": "^0.2.1",
+    "@zxing/library": "^0.23.0"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
@@ -53,14 +53,14 @@
     "@types/jest": "^30.0.0",
     "@types/node": "^20.19.43",
     "canvas": "^3.2.3",
-    "esbuild": "^0.28.1",
-    "eslint": "^10.6.0",
+    "esbuild": "^0.28.2",
+    "eslint": "^10.8.1",
     "jest": "^30.4.2",
-    "jest-canvas-mock": "^2.5.2",
+    "jest-canvas-mock": "^2.5.8",
     "jest-environment-jsdom": "^30.4.1",
     "shx": "^0.4.0",
-    "ts-jest": "^29.4.11",
+    "ts-jest": "^29.4.12",
     "typescript": "~5.8.3",
-    "typescript-eslint": "^8.62.1"
+    "typescript-eslint": "^8.67.0"
   }
 }
